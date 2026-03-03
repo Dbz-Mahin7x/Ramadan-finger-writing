@@ -3,299 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🌙 Ramadan Finger writing ✨</title>
+  <title>🌙 Air Finger Draw · Ramadan ✨</title>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* same beautiful styles – just small tweaks */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
 
-    body {
-      margin: 0;
-      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-      overflow: hidden;
-      font-family: 'Poppins', sans-serif;
-    }
+    body { margin: 0; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%); overflow: hidden; font-family: 'Poppins', sans-serif; }
+    video { display: none; }
+    canvas { width: 100%; height: 100%; transform: scaleX(-1); position: absolute; z-index: 1; filter: drop-shadow(0 0 20px rgba(245, 208, 97, 0.3)); }
 
-    video {
-      display: none;
-    }
-
-    canvas {
-      width: 100%;
-      height: 100%;
-      transform: scaleX(-1);
-      position: absolute;
-      z-index: 1;
-      filter: drop-shadow(0 0 20px rgba(245, 208, 97, 0.3));
-    }
-
-    /* UI Overlay */
     .ui-overlay {
-      position: fixed;
-      z-index: 10;
-      color: white;
-      padding: 20px;
-      pointer-events: none;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      position: fixed; z-index: 10; color: white; padding: 20px; pointer-events: none;
+      width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between;
     }
 
-    /* Header */
-    .ramadan-header {
-      text-align: center;
-      pointer-events: none;
-      animation: fadeInDown 1s ease;
-    }
-
+    .ramadan-header { text-align: center; pointer-events: none; animation: fadeInDown 1s ease; }
     .ramadan-header h1 {
-      font-family: 'Amiri', serif;
-      font-size: clamp(1.5rem, 5vw, 2.5rem);
-      color: #F5D061;
-      text-shadow: 0 0 20px rgba(245, 208, 97, 0.5);
-      margin-bottom: 5px;
+      font-family: 'Amiri', serif; font-size: clamp(1.5rem, 5vw, 2.5rem); color: #F5D061;
+      text-shadow: 0 0 20px rgba(245, 208, 97, 0.5); margin-bottom: 5px;
     }
+    .ramadan-header h1 i { margin: 0 10px; animation: twinkle 2s infinite; }
+    .ramadan-header p { color: rgba(255, 255, 255, 0.8); font-size: clamp(0.8rem, 3vw, 1rem); letter-spacing: 2px; }
 
-    .ramadan-header h1 i {
-      margin: 0 10px;
-      animation: twinkle 2s infinite;
-    }
-
-    .ramadan-header p {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: clamp(0.8rem, 3vw, 1rem);
-      letter-spacing: 2px;
-    }
-
-    /* Controls Panel */
     .controls-panel {
-      background: rgba(10, 10, 20, 0.7);
-      backdrop-filter: blur(10px);
-      border-radius: 30px;
-      padding: 15px 20px;
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      border: 1px solid rgba(245, 208, 97, 0.3);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      pointer-events: auto;
-      max-width: 90%;
-      margin: 0 auto;
-      animation: slideUp 1s ease;
+      background: rgba(10, 10, 20, 0.7); backdrop-filter: blur(10px); border-radius: 30px; padding: 15px 20px;
+      display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; align-items: center;
+      border: 1px solid rgba(245, 208, 97, 0.3); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      pointer-events: auto; max-width: 90%; margin: 0 auto; animation: slideUp 1s ease;
     }
 
     .control-btn {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(245, 208, 97, 0.5);
-      color: #F5D061;
-      width: 50px;
-      height: 50px;
-      border-radius: 25px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(245, 208, 97, 0.5); color: #F5D061;
+      width: 50px; height: 50px; border-radius: 25px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; cursor: pointer; transition: all 0.3s ease;
     }
+    .control-btn:hover, .control-btn.active { background: #F5D061; color: #1a1a2e; transform: scale(1.1); box-shadow: 0 0 20px #F5D061; }
+    .control-btn.clear-btn { background: rgba(255, 99, 99, 0.2); border-color: #ff6b6b; color: #ff6b6b; }
+    .control-btn.clear-btn:hover { background: #ff6b6b; color: white; }
 
-    .control-btn:hover, .control-btn.active {
-      background: #F5D061;
-      color: #1a1a2e;
-      transform: scale(1.1);
-      box-shadow: 0 0 20px #F5D061;
-    }
+    .color-picker { display: flex; gap: 10px; }
+    .color-dot { width: 30px; height: 30px; border-radius: 15px; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; }
+    .color-dot:hover { transform: scale(1.2); border-color: white; }
+    .color-dot.active { border-color: white; box-shadow: 0 0 15px currentColor; }
 
-    .control-btn.clear-btn {
-      background: rgba(255, 99, 99, 0.2);
-      border-color: #ff6b6b;
-      color: #ff6b6b;
-    }
+    .brush-size { display: flex; align-items: center; gap: 10px; color: white; }
+    .size-value { color: #F5D061; font-weight: bold; min-width: 30px; text-align: center; }
 
-    .control-btn.clear-btn:hover {
-      background: #ff6b6b;
-      color: white;
-    }
-
-    .color-picker {
-      display: flex;
-      gap: 10px;
-    }
-
-    .color-dot {
-      width: 30px;
-      height: 30px;
-      border-radius: 15px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
-    }
-
-    .color-dot:hover {
-      transform: scale(1.2);
-      border-color: white;
-    }
-
-    .color-dot.active {
-      border-color: white;
-      box-shadow: 0 0 15px currentColor;
-    }
-
-    .brush-size {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: white;
-    }
-
-    .size-value {
-      color: #F5D061;
-      font-weight: bold;
-      min-width: 30px;
-      text-align: center;
-    }
-
-    /* Instructions */
     .instructions {
-      text-align: center;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 0.9rem;
-      pointer-events: none;
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      flex-wrap: wrap;
+      text-align: center; color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; pointer-events: none;
+      display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
     }
+    .instruction-item { display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 8px 15px; border-radius: 20px; backdrop-filter: blur(5px); }
+    .instruction-item i { color: #F5D061; }
+    .key { background: rgba(245, 208, 97, 0.2); border: 1px solid #F5D061; padding: 3px 8px; border-radius: 8px; color: #F5D061; font-weight: bold; }
 
-    .instruction-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 8px 15px;
-      border-radius: 20px;
-      backdrop-filter: blur(5px);
-    }
+    .developer-credit { text-align: center; padding: 15px; font-size: 0.8rem; color: rgba(255, 255, 255, 0.5); pointer-events: auto; }
+    .developer-credit a { color: #F5D061; text-decoration: none; font-weight: 600; }
+    .developer-credit i { color: #ff6b6b; animation: heartbeat 1.5s infinite; }
 
-    .instruction-item i {
-      color: #F5D061;
-    }
+    @keyframes heartbeat { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+    @keyframes fadeInDown { from { opacity:0; transform: translateY(-30px); } to { opacity:1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity:0; transform: translateY(50px); } to { opacity:1; transform: translateY(0); } }
+    @keyframes twinkle { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 
-    .key {
-      background: rgba(245, 208, 97, 0.2);
-      border: 1px solid #F5D061;
-      padding: 3px 8px;
-      border-radius: 8px;
-      color: #F5D061;
-      font-weight: bold;
-    }
-
-    /* Developer Credit */
-    .developer-credit {
-      text-align: center;
-      padding: 15px;
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.5);
-      pointer-events: auto;
-    }
-
-    .developer-credit a {
-      color: #F5D061;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .developer-credit i {
-      color: #ff6b6b;
-      animation: heartbeat 1.5s infinite;
-    }
-
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-    }
-
-    @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(50px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes twinkle {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    /* Mobile specific */
     @media (max-width: 768px) {
-      .controls-panel {
-        padding: 10px;
-        gap: 8px;
-      }
-
-      .control-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
-      }
-
-      .color-dot {
-        width: 25px;
-        height: 25px;
-      }
-
-      .instructions {
-        font-size: 0.7rem;
-        gap: 10px;
-      }
-
-      .instruction-item {
-        padding: 5px 10px;
-      }
+      .controls-panel { padding:10px; gap:8px; }
+      .control-btn { width:40px; height:40px; font-size:1rem; }
+      .color-dot { width:25px; height:25px; }
+      .instructions { font-size:0.7rem; gap:10px; }
+      .instruction-item { padding:5px 10px; }
     }
-
     @media (max-width: 480px) {
-      .controls-panel {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .color-picker {
-        justify-content: center;
-      }
-
-      .instructions {
-        flex-direction: column;
-        gap: 5px;
-      }
+      .controls-panel { flex-direction: column; align-items: stretch; }
+      .color-picker { justify-content: center; }
+      .instructions { flex-direction: column; gap:5px; }
     }
   </style>
 </head>
@@ -308,16 +94,16 @@
     <div class="ramadan-header">
       <h1>
         <i class="fas fa-star"></i>
-        🌙 Ramadan Finger writing ✨
+        🌙 Finger air drawing ✨
         <i class="fas fa-star"></i>
       </h1>
-      <p>Draw in the air with your finger • Developed with ®️ by Mahin Ahmed 2026</p>
+      <p>Just point your index finger · it draws automatically · Mahin Ahmed 2026</p>
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 20px;">
       <!-- Controls Panel -->
       <div class="controls-panel">
-        <div class="control-btn" id="toggleHand" title="Toggle Hand Tracking">
+        <div class="control-btn" id="toggleHand" title="Hide/Show hand skeleton">
           <i class="fas fa-hand-pointer"></i>
         </div>
 
@@ -331,37 +117,24 @@
 
         <div class="brush-size">
           <i class="fas fa-circle" style="color: #F5D061;"></i>
-          <span class="size-value" id="brushSize">6</span>
+          <span class="size-value" id="brushSize">8</span>
           <i class="fas fa-circle" style="color: #F5D061; font-size: 1.5rem;"></i>
         </div>
 
-        <div class="control-btn clear-btn" id="clearBtn" title="Clear Canvas">
+        <div class="control-btn clear-btn" id="clearBtn" title="Clear everything">
           <i class="fas fa-trash-alt"></i>
         </div>
 
-        <div class="control-btn" id="saveBtn" title="Save Artwork">
+        <div class="control-btn" id="saveBtn" title="Save drawing">
           <i class="fas fa-download"></i>
         </div>
       </div>
 
-      <!-- Instructions -->
+      <!-- Instructions (simplified) -->
       <div class="instructions">
-        <div class="instruction-item">
-          <i class="fas fa-hand-pointer"></i>
-          <span>Show hand to camera</span>
-        </div>
-        <div class="instruction-item">
-          <span class="key">⌫</span>
-          <span>Hold to draw</span>
-        </div>
-        <div class="instruction-item">
-          <span class="key">␣</span>
-          <span>Clear all</span>
-        </div>
-        <div class="instruction-item">
-          <span class="key">🎨</span>
-          <span>Tap colors</span>
-        </div>
+        <div class="instruction-item"><i class="fas fa-hand-pointer"></i><span>Show your hand → draws with index finger</span></div>
+        <div class="instruction-item"><span class="key">✋</span><span>Close fist to pause drawing</span></div>
+        <div class="instruction-item"><span class="key">␣</span><span>Spacebar = clear</span></div>
       </div>
     </div>
 
@@ -372,327 +145,300 @@
   </div>
 
   <script>
-    // ==================== CONFIGURATION ====================
-    const vid = document.getElementById('vid');
-    const c = document.getElementById('c');
-    const ctx = c.getContext('2d');
-    
-    // Drawing state
-    let arr = [];
-    let cur = [];
-    let shift = false;
-    let draw = false;
-    let sx = null;
-    let sy = null;
-    let handVisible = true;
-    
-    // Customization
-    let currentColor = '#F5D061';
-    let currentShadow = '245, 208, 97';
-    let brushWidth = 6;
-    let showHandTracking = true;
+    (function() {
+      // ========== CONFIG ==========
+      const vid = document.getElementById('vid');
+      const c = document.getElementById('c');
+      const ctx = c.getContext('2d');
 
-    // ==================== EVENT LISTENERS ====================
-    window.onkeydown = function(e) {
-      if (e.key === 'Shift' || e.keyCode === 16) {
-        shift = true;
-        e.preventDefault();
-      }
-      if (e.code === 'Space') {
-        arr = [];
-        showToast('✨ Canvas cleared!');
-      }
-    }
+      // Storage: every stroke is { points, color, shadow, width }
+      let strokes = [];
+      let currentStroke = [];        // points being drawn now
+      let isDrawing = false;         // are we currently recording points?
 
-    window.onkeyup = function(e) {
-      if (e.key === 'Shift' || e.keyCode === 16) {
-        shift = false;
-      }
-    }
+      // smoothed finger position
+      let smoothX = null, smoothY = null;
 
-    // Touch support for mobile
-    let touchShift = false;
-    document.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 2) {
-        touchShift = true;
-        e.preventDefault();
-      }
-    });
+      // settings
+      let currentColor = '#F5D061';
+      let currentShadow = '245, 208, 97';
+      let brushWidth = 8;
+      let showHandTracking = true;    // skeleton overlay
 
-    document.addEventListener('touchend', (e) => {
-      if (e.touches.length === 0) {
-        touchShift = false;
-      }
-    });
+      // ---------- NEW: automatic draw when index finger is up (landmark 8) ----------
+      // We'll check the angle / position of the index finger tip relative to other joints.
+      // The simple rule: if index finger tip (8) is higher (smaller y) than the pip joint (6) and the hand is open, we draw.
+      // But to make it robust: we check if index finger is extended (tip above middle joint)
+      // We'll also allow drawing if any finger is extended? For simplicity use index finger only.
 
-    // ==================== UI CONTROLS ====================
-    // Color picker
-    document.querySelectorAll('.color-dot').forEach(dot => {
-      dot.addEventListener('click', () => {
-        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
-        dot.classList.add('active');
-        currentColor = dot.dataset.color;
-        currentShadow = dot.dataset.shadow;
+      // ========== MEDIAPIPE INIT ==========
+      const hands = new Hands({ 
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
       });
-    });
+      hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
 
-    // Clear button
-    document.getElementById('clearBtn').addEventListener('click', () => {
-      arr = [];
-      showToast('🗑️ Canvas cleared!');
-    });
+      // ========== MAIN RENDERING ==========
+      hands.onResults((results) => {
+        // resize canvas to window
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
 
-    // Save button
-    document.getElementById('saveBtn').addEventListener('click', () => {
-      // Create a temporary canvas without UI
-      const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = c.width;
-      tempCanvas.height = c.height;
-      const tempCtx = tempCanvas.getContext('2d');
-      
-      // Draw background
-      tempCtx.fillStyle = '#050301';
-      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-      
-      // Draw all drawings
-      tempCtx.shadowColor = currentColor;
-      tempCtx.shadowBlur = 15;
-      tempCtx.strokeStyle = currentColor;
-      tempCtx.lineWidth = brushWidth;
-      tempCtx.lineCap = 'round';
-      tempCtx.lineJoin = 'round';
-      
-      for (let i = 0; i < arr.length; i++) {
-        tempCtx.beginPath();
-        for (let j = 0; j < arr[i].length; j++) {
-          if (j === 0) tempCtx.moveTo(arr[i][j].x, arr[i][j].y);
-          else tempCtx.lineTo(arr[i][j].x, arr[i][j].y);
-        }
-        tempCtx.stroke();
-      }
-      
-      // Download
-      const link = document.createElement('a');
-      link.download = `ramadan-art-${Date.now()}.png`;
-      link.href = tempCanvas.toDataURL();
-      link.click();
-      showToast('💾 Artwork saved!');
-    });
+        // 1. draw dark gradient background
+        const grad = ctx.createLinearGradient(0, 0, c.width, c.height);
+        grad.addColorStop(0, '#0c0b1a');
+        grad.addColorStop(1, '#1f1b30');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, c.width, c.height);
 
-    // Toggle hand tracking
-    document.getElementById('toggleHand').addEventListener('click', function() {
-      showHandTracking = !showHandTracking;
-      this.classList.toggle('active');
-      showToast(showHandTracking ? '👆 Hand tracking on' : '👆 Hand tracking off');
-    });
-
-    // Brush size (simulated with scroll)
-    document.querySelector('.brush-size').addEventListener('wheel', (e) => {
-      e.preventDefault();
-      brushWidth += e.deltaY > 0 ? -1 : 1;
-      brushWidth = Math.max(2, Math.min(20, brushWidth));
-      document.getElementById('brushSize').textContent = brushWidth;
-    });
-
-    // Toast notification
-    function showToast(message) {
-      const toast = document.createElement('div');
-      toast.style.cssText = `
-        position: fixed;
-        bottom: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(10, 10, 20, 0.9);
-        backdrop-filter: blur(10px);
-        color: #F5D061;
-        padding: 10px 20px;
-        border-radius: 30px;
-        border: 1px solid #F5D061;
-        z-index: 1000;
-        animation: slideUp 0.3s ease, fadeOut 0.3s ease 2s forwards;
-        font-size: 0.9rem;
-      `;
-      toast.textContent = message;
-      document.body.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.remove();
-      }, 2300);
-    }
-
-    // Add style for toast animation
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes fadeOut {
-        to { opacity: 0; transform: translateX(-50%) translateY(20px); }
-      }
-    `;
-    document.head.appendChild(style);
-
-    // ==================== DRAWING ENGINE ====================
-    function run(res) {
-      c.width = window.innerWidth;
-      c.height = window.innerHeight;
-      
-      // Draw background with gradient
-      const gradient = ctx.createLinearGradient(0, 0, c.width, c.height);
-      gradient.addColorStop(0, 'rgba(5, 3, 1, 0.9)');
-      gradient.addColorStop(1, 'rgba(15, 10, 5, 0.95)');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, c.width, c.height);
-
-      // Draw existing strokes with enhanced effects
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i].length < 2) continue;
-        
-        ctx.shadowColor = currentColor;
-        ctx.shadowBlur = 15;
-        ctx.strokeStyle = currentColor;
-        ctx.lineWidth = brushWidth;
+        // 2. draw all finished strokes (with stored color)
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        
-        ctx.beginPath();
-        for (let j = 0; j < arr[i].length; j++) {
-          if (j === 0) ctx.moveTo(arr[i][j].x, arr[i][j].y);
-          else ctx.lineTo(arr[i][j].x, arr[i][j].y);
-        }
-        ctx.stroke();
-      }
-
-      // Draw decorative elements
-      ctx.shadowBlur = 0;
-      
-      // Draw floating stars
-      for (let i = 0; i < 5; i++) {
-        const time = Date.now() / 1000;
-        const x = (Math.sin(time * 0.5 + i) * 0.5 + 0.5) * c.width;
-        const y = (Math.cos(time * 0.3 + i) * 0.3 + 0.3) * c.height;
-        
-        ctx.beginPath();
-        ctx.arc(x, y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${currentShadow}, 0.3)`;
-        ctx.fill();
-      }
-
-      // Hand tracking
-      if (res.multiHandLandmarks && res.multiHandLandmarks.length > 0 && showHandTracking) {
-        const lm = res.multiHandLandmarks[0];
-        
-        // Draw hand connections with glow
-        drawConnectors(ctx, lm, HAND_CONNECTIONS, {
-          color: `rgba(${currentShadow}, 0.2)`,
-          lineWidth: 2
-        });
-        
-        // Draw landmarks
-        drawLandmarks(ctx, lm, {
-          color: '#FFFFFF',
-          lineWidth: 1,
-          radius: 4
-        });
-
-        // Index finger tip
-        const ind = lm[8];
-        const rx = ind.x * c.width;
-        const ry = ind.y * c.height;
-
-        // Smooth cursor movement
-        if (sx === null) {
-          sx = rx; 
-          sy = ry;
-        } else {
-          sx += (rx - sx) * 0.35;
-          sy += (ry - sy) * 0.35;
-        }
-
-        // Draw cursor with effects
-        ctx.shadowColor = currentColor;
-        ctx.shadowBlur = 20;
-        
-        // Outer glow
-        ctx.beginPath();
-        ctx.arc(sx, sy, brushWidth * 1.5, 0, 2 * Math.PI);
-        ctx.fillStyle = `rgba(${currentShadow}, 0.2)`;
-        ctx.fill();
-        
-        // Inner cursor
-        ctx.beginPath();
-        ctx.arc(sx, sy, brushWidth / 2, 0, 2 * Math.PI);
-        
-        if (shift || touchShift) {
-          // Drawing mode
-          ctx.fillStyle = currentColor;
-          ctx.shadowColor = currentColor;
-          ctx.shadowBlur = 30;
-        } else {
-          // Idle mode
-          ctx.fillStyle = `rgba(${currentShadow}, 0.3)`;
-          ctx.strokeStyle = currentColor;
-          ctx.lineWidth = 2;
+        for (let s of strokes) {
+          if (s.points.length < 2) continue;
+          ctx.shadowColor = s.shadow;
+          ctx.shadowBlur = 20;
+          ctx.strokeStyle = s.color;
+          ctx.lineWidth = s.width;
+          ctx.beginPath();
+          ctx.moveTo(s.points[0].x, s.points[0].y);
+          for (let i = 1; i < s.points.length; i++) {
+            ctx.lineTo(s.points[i].x, s.points[i].y);
+          }
           ctx.stroke();
         }
-        ctx.fill();
 
-        // Drawing logic
-        if (shift || touchShift) {
-          if (!draw) {
-            draw = true;
-            cur = [];
-            arr.push(cur);
+        // 3. draw current live stroke
+        if (currentStroke.length > 1) {
+          ctx.shadowColor = currentShadow;
+          ctx.shadowBlur = 25;
+          ctx.strokeStyle = currentColor;
+          ctx.lineWidth = brushWidth;
+          ctx.beginPath();
+          ctx.moveTo(currentStroke[0].x, currentStroke[0].y);
+          for (let i = 1; i < currentStroke.length; i++) {
+            ctx.lineTo(currentStroke[i].x, currentStroke[i].y);
           }
-          cur.push({x: sx, y: sy});
-        } else {
-          draw = false;
+          ctx.stroke();
         }
-      } else {
-        draw = false;
-        sx = null;
-      }
-    }
 
-    // ==================== MEDIAPIPE INIT ====================
-    const h = new Hands({
-      locateFile: (file) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-      }
-    });
+        // 4. process hand landmarks if any
+        ctx.shadowBlur = 0; // no shadow for landmarks
 
-    h.setOptions({ 
-      maxNumHands: 1, 
-      modelComplexity: 1, 
-      minDetectionConfidence: 0.5, 
-      minTrackingConfidence: 0.5 
-    });
+        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+          const lm = results.multiHandLandmarks[0]; // first hand
 
-    h.onResults(run);
+          // Draw skeleton if enabled
+          if (showHandTracking) {
+            drawConnectors(ctx, lm, HAND_CONNECTIONS, { color: `rgba(${currentShadow}, 0.25)`, lineWidth: 2 });
+            drawLandmarks(ctx, lm, { color: 'white', radius: 4 });
+          }
 
-    const cam = new Camera(vid, {
-      onFrame: async () => { await h.send({image: vid}); },
-      width: 1280, 
-      height: 720
-    });
+          // ----- AUTOMATIC DRAW LOGIC: index finger extended = draw -----
+          const tip = lm[8];      // index fingertip
+          const pip = lm[6];      // index middle joint
+          const mcp = lm[5];      // index base joint
 
-    cam.start();
+          // Condition: tip is above pip in y (since y increases downward in image coordinates)
+          // Also ensure hand is not a fist: roughly tip.y < pip.y (in MediaPipe landmarks, y is normalized 0-1, top=0)
+          const indexExtended = tip.y < pip.y - 0.02;  // small threshold
 
-    // ==================== MOBILE OPTIMIZATIONS ====================
-    // Prevent zoom on double tap
-    document.addEventListener('touchmove', (e) => {
-      if (e.touches.length >= 2) {
+          // Also we could check that middle finger is not also extended? But for simplicity index extended = draw.
+          // But we need to avoid drawing when hand is sideways? We'll just use index extension.
+
+          // Additionally, avoid drawing if wrist is too high? not necessary.
+
+          // smoothed cursor from tip
+          const rawX = tip.x * c.width;
+          const rawY = tip.y * c.height;
+
+          if (smoothX === null) {
+            smoothX = rawX;
+            smoothY = rawY;
+          } else {
+            smoothX += (rawX - smoothX) * 0.35;
+            smoothY += (rawY - smoothY) * 0.35;
+          }
+
+          // ----- draw custom cursor (glow ring) -----
+          ctx.shadowColor = currentColor;
+          ctx.shadowBlur = 30;
+          // outer aura
+          ctx.beginPath();
+          ctx.arc(smoothX, smoothY, brushWidth * 1.8, 0, 2*Math.PI);
+          ctx.fillStyle = `rgba(${currentShadow}, 0.2)`;
+          ctx.fill();
+          // inner dot (drawing mode if indexExtended)
+          ctx.beginPath();
+          ctx.arc(smoothX, smoothY, brushWidth * 0.7, 0, 2*Math.PI);
+          ctx.fillStyle = indexExtended ? currentColor : `rgba(${currentShadow}, 0.5)`;
+          ctx.fill();
+          if (!indexExtended) {
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          }
+
+          // ----- drawing decision based on index extended -----
+          if (indexExtended) {
+            if (!isDrawing) {
+              // start new stroke
+              isDrawing = true;
+              currentStroke = [];
+            }
+            // add point
+            currentStroke.push({ x: smoothX, y: smoothY });
+          } else {
+            // finish stroke if we were drawing
+            if (isDrawing && currentStroke.length > 1) {
+              strokes.push({
+                points: [...currentStroke],
+                color: currentColor,
+                shadow: currentShadow,
+                width: brushWidth
+              });
+            }
+            currentStroke = [];
+            isDrawing = false;
+          }
+        } else {
+          // no hand: finish any ongoing stroke
+          if (isDrawing && currentStroke.length > 1) {
+            strokes.push({
+              points: [...currentStroke],
+              color: currentColor,
+              shadow: currentShadow,
+              width: brushWidth
+            });
+          }
+          currentStroke = [];
+          isDrawing = false;
+          smoothX = null;
+        }
+
+        // add a few sparkles for atmosphere
+        for (let i=0;i<3;i++) {
+          let t = Date.now()/600;
+          let x = (Math.sin(t + i*2)*0.3 + 0.5)*c.width;
+          let y = (Math.cos(t*0.9 + i)*0.2 + 0.7)*c.height;
+          ctx.beginPath();
+          ctx.arc(x, y, 2.5, 0, 2*Math.PI);
+          ctx.fillStyle = `rgba(${currentShadow}, 0.25)`;
+          ctx.fill();
+        }
+      });
+
+      // ========== CAMERA ==========
+      const camera = new Camera(vid, {
+        onFrame: async () => { await hands.send({ image: vid }); },
+        width: 1280,
+        height: 720
+      });
+      camera.start().catch(e => alert('Please allow camera access ✨'));
+
+      // ========== UI CONTROLS ==========
+      // color picker
+      document.querySelectorAll('.color-dot').forEach(dot => {
+        dot.addEventListener('click', () => {
+          document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+          dot.classList.add('active');
+          currentColor = dot.dataset.color;
+          currentShadow = dot.dataset.shadow;
+        });
+      });
+
+      // clear button
+      document.getElementById('clearBtn').addEventListener('click', () => {
+        strokes = [];
+        currentStroke = [];
+        isDrawing = false;
+        showToast('✨ Canvas cleared');
+      });
+
+      // save
+      document.getElementById('saveBtn').addEventListener('click', () => {
+        const off = document.createElement('canvas');
+        off.width = c.width;
+        off.height = c.height;
+        const octx = off.getContext('2d');
+        octx.fillStyle = '#0a0a1a';
+        octx.fillRect(0,0,off.width,off.height);
+        octx.lineCap = 'round';
+        octx.lineJoin = 'round';
+        for (let s of strokes) {
+          if (s.points.length<2) continue;
+          octx.shadowColor = s.shadow;
+          octx.shadowBlur = 20;
+          octx.strokeStyle = s.color;
+          octx.lineWidth = s.width;
+          octx.beginPath();
+          octx.moveTo(s.points[0].x, s.points[0].y);
+          for (let i=1;i<s.points.length;i++) octx.lineTo(s.points[i].x, s.points[i].y);
+          octx.stroke();
+        }
+        const link = document.createElement('a');
+        link.download = `ramadan-draw-${Date.now()}.png`;
+        link.href = off.toDataURL();
+        link.click();
+        showToast('📸 Saved!');
+      });
+
+      // toggle hand skeleton
+      document.getElementById('toggleHand').addEventListener('click', function() {
+        showHandTracking = !showHandTracking;
+        this.classList.toggle('active');
+        showToast(showHandTracking ? '👆 Skeleton on' : '👆 Skeleton off');
+      });
+
+      // brush size via wheel
+      document.querySelector('.brush-size').addEventListener('wheel', (e) => {
         e.preventDefault();
+        brushWidth += e.deltaY > 0 ? -1 : 1;
+        brushWidth = Math.max(3, Math.min(30, brushWidth));
+        document.getElementById('brushSize').innerText = brushWidth;
+      });
+
+      // keyboard: space clears, shift no longer needed (but we keep space)
+      window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+          strokes = [];
+          currentStroke = [];
+          isDrawing = false;
+          showToast('✨ Cleared');
+          e.preventDefault();
+        }
+      });
+
+      // simple toast
+      function showToast(msg) {
+        const el = document.createElement('div');
+        el.style.cssText = `
+          position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+          background: rgba(10,10,20,0.9); backdrop-filter: blur(10px); color: #F5D061;
+          padding: 10px 24px; border-radius: 40px; border: 1px solid #F5D061;
+          z-index: 1000; animation: slideUp 0.2s ease, fadeOut 0.3s ease 1.8s forwards;
+          font-size: 1rem; white-space: nowrap;
+        `;
+        el.textContent = msg;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 2100);
       }
-    }, { passive: false });
 
-    // Handle orientation changes
-    window.addEventListener('resize', () => {
-      c.width = window.innerWidth;
-      c.height = window.innerHeight;
-    });
+      // resize
+      window.addEventListener('resize', () => {
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
+      });
 
-    // Initial toast
-    setTimeout(() => {
-      showToast('🌙 Ramadan Mubarak! Draw with your finger ✨');
-    }, 1000);
+      // extra style for fadeOut
+      const style = document.createElement('style');
+      style.innerHTML = `@keyframes fadeOut { to { opacity: 0; transform: translateX(-50%) translateY(20px); } }`;
+      document.head.appendChild(style);
+
+      // welcome
+      setTimeout(() => {
+        showToast('🖐️ Just show your hand – index finger draws!');
+      }, 2000);
+    })();
   </script>
 </body>
 </html>
