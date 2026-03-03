@@ -1,16 +1,10 @@
 {
-  "name": "ramadan-finger-writing",
+  "name": "ramadan-finger-art",
   "version": 2,
   "builds": [
     {
       "src": "*.html",
       "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
     }
   ],
   "headers": [
@@ -28,10 +22,6 @@
         {
           "key": "Cross-Origin-Opener-Policy",
           "value": "same-origin"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
         }
       ]
     }
