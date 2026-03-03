@@ -1,0 +1,13 @@
+{
+  "name": "ramadan-finger-writing",
+  "version": "1.0.0",
+  "description": "Ramadan Finger Drawing App with Hand Tracking",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["ramadan", "hand-tracking", "drawing"],
+  "author": "Dbz-Mahin7x",
+  "license": "MIT"
+}
